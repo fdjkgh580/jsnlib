@@ -9,6 +9,9 @@
         "php": ">=5.2.4"
     },
     "autoload": {
-        "classmap": ["jsncar/jsncar.php"]
+        "classmap": [
+            "jsncar/jsncar.php",
+            "jsnao/jsnao.php"
+        ]
     }
 }
