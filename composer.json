@@ -1,0 +1,14 @@
+{
+    "name": "jsnlib/jsnlib",
+    "type": "library",
+    "description": "類別庫",
+    "keywords": ["library"],
+    "license": "MIT",
+    "homepage": "https://github.com/fdjkgh580/jsnlib",
+    "require": {
+        "php": ">=5.2.4"
+    },
+    "autoload": {
+        "classmap": ["jsncar/jsncar.php"]
+    }
+}
