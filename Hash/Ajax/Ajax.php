@@ -1,8 +1,9 @@
 <?
+namespace Jsnlib\hash;
 /*
  * 提供由AJAX送出表單時，需要驗證的hash。比對成功後，會自動拋回一組新的hash值，以增加安全性。
  */
-class jsnajaxhash {
+class Ajax {
 	
 	//SESSION名稱
 	public $sess_name;

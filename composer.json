@@ -1,17 +1,43 @@
 {
-    "name": "jsnlib/jsnlib",
+    "name": "Jsnlib/Jsnlib",
     "type": "library",
     "description": "類別庫",
     "keywords": ["library"],
     "license": "MIT",
     "homepage": "https://github.com/fdjkgh580/jsnlib",
     "require": {
-        "php": ">=5.2.4"
+        "php": ">=5.4"
     },
     "autoload": {
         "classmap": [
-            "jsncar/jsncar.php",
-            "jsnao/jsnao.php"
+            "Jsnajaxhash/Jsnajaxhash.php",
+            "Jsnalbum/Jsnalbum.php",
+            "Jsnao/Jsnao.php",
+            "Jsnarraygroup/Jsnarraygroup.php",
+            "Jsnbgpopen/Jsnbgpopen.php",
+            "Jsncar/Jsncar.php",
+            "Jsnconfig/Jsnconfig.php",
+            "Jsncopyurlimg/Jsncopyurlimg.php",
+            "Jsndel/Jsndel.php",
+            "Jsnedit/Jsnedit.php",
+            "Jsnexport/Jsnexport.php",
+            "Jsnfakestr/Jsnfakestr.php",
+            "Jsnfbiden/Jsnfbiden.php",
+            "Jsnfilelink/Jsnfilelink.php",
+            "Jsnhform/Jsnhform.php",
+            "Jsnkanban/Jsnkanban.php",
+            "Jsnkanban2/Jsnkanban2.php",
+            "Jsnlegalproccess/Jsnlegalproccess.php",
+            "Jsnlog/Jsnlog.php",
+            "Jsnpdo/Jsnpdo.php",
+            "Jsnpopcount/Jsnpopcount.php",
+            "Jsnrand/Jsnrand.php",
+            "Jsnreplace/Jsnreplace.php",
+            "Jsnrequestlog/Jsnrequestlog.php",
+            "Jsnseq/Jsnseq.php",
+            "Jsntaiwanarea/Jsntaiwanarea.php",
+            "Jsnupload/Jsnupload.php",
+            "Jsnuser/Jsnuser.php",
         ]
     }
 }

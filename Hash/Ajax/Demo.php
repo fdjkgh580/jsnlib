@@ -1,15 +1,16 @@
 <?
 session_start();
-include_once("jsnajaxhash.php");
-$jsnajaxhash = new jsnajaxhash;
+include_once("Ajax.php");
+
+$Ajax = new Jsnlib\hash\Ajax;
 
 if ($_POST['act'] == "test") {
 	
 	//比對
 	$thehash = $_POST['thehash'];
-	$array = $jsnajaxhash->check($thehash);
+	$array = $Ajax->check($thehash);
 	
-	//接收使用者輸入的資料, 請避免覆蓋到class jsnajaxhash回傳的key
+	//接收使用者輸入的資料, 請避免覆蓋到class Ajax回傳的key
 	$array['user_write'] = $_POST['content'];
 	
 	//使用json回傳
@@ -23,14 +24,14 @@ if ($_POST['act'] == "test") {
 
 [使用說明]
 
-1.設定一個<input name="隨便取名稱A" type="hidden" value="<?=$jsnajaxhash->put()?>">
+1.設定一個<input name="隨便取名稱A" type="hidden" value="<?=$Ajax->put()?>">
 
 2.建立一個$.post的json格式，如範例
 
 3.其中jQuery務必夾帶參數如
 	{'thehash' : 『隨便取名稱A』的值}
 
-4.進行PHP比對時$jsnajaxhash->check(這裡務必填寫如『thehash』);
+4.進行PHP比對時$Ajax->check(這裡務必填寫如『thehash』);
 
 5.比對成功後會得到data.status == "success"，
 再將步驟1的『隨便取名稱A』，指定PHP回傳的新hash值(由data.newhash取得)
@@ -89,6 +90,6 @@ $(function (){
 
 <br>
 這裡是要隱藏的hash以供變換，為了查看替換的動作，所以在此顯示，實際上務必使用type="hidden"：<br>
-<input name="hash" type="text" class="hash" value="<?=$jsnajaxhash->put()?>">
+<input name="hash" type="text" class="hash" value="<?=$Ajax->put()?>">
 </body>
 </html>
