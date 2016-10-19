@@ -1,6 +1,7 @@
 <?
+namespace Jsnlib\Copy;
 
-class Jsncopyurlimg
+class Urlimg
 {
 	private	$url; //要抓取的圖片網址
 	private $result; //供檢視活動完成的結果
@@ -87,7 +88,7 @@ class Jsncopyurlimg
 	
 	public function result()
 	{
-		return (!empty($this->result)) ? new ArrayObject($this->result) : false;
+		return (!empty($this->result)) ? new \ArrayObject($this->result) : false;
 	}
 	
 	
