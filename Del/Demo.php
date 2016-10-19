@@ -1,18 +1,18 @@
 <?
-include_once("jsndel.php");
+include_once("Del.php");
 
-$jsndel = new Jsndel;
-$result = $jsndel->get("D");
+$Del = new Jsnlib\Del;
+$result = $Del->get("D");
 if ($result == 0) die("指定的路徑不存在!");
 print_r($result);
 
 //一、刪除包含自己
-//$result = $jsndel->all();
-//if ($result) echo "清除資料夾完畢!";
+// $result = $Del->all();
+// if ($result) echo "清除資料夾完畢!";
 
 /*
 //二、刪除自己之下
-$result = $jsndel->under();
+$result = $Del->under();
 if ($result) echo "清除資料夾完畢!";
 */
 

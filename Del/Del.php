@@ -1,6 +1,7 @@
 <?
+namespace Jsnlib;
 
-class Jsndel {
+class Del {
 	
 	//指定的dir
 	private $dir;
