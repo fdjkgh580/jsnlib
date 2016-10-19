@@ -1,5 +1,7 @@
 <?
-class Jsnreplace
+namespace Jsnlib;
+
+class Replace
 {
 	private $box = array();
 	public $exclude_token;
