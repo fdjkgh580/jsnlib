@@ -1,5 +1,7 @@
 <?
-class Jsnrand {
+namespace Jsnlib;
+
+class Rand {
 	
 	//不重覆時比對用的陣列
 	public $notrepeat = array();
