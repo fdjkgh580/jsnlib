@@ -1,6 +1,6 @@
 <?
-include_once("jsntaiwanarea.php");
-$jsntaiwanarea = new Jsntaiwanarea;
+include_once("Area.php");
+$jsntaiwanarea = new Jsnlib\Taiwan\Area;
 
 //1.查詢城市編號, 得到台北市
 echo "查詢1001<br>";

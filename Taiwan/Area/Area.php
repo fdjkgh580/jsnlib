@@ -1,6 +1,8 @@
 <?
+namespace Jsnlib\Taiwan;
+
 //台灣行政區域
-class Jsntaiwanarea {
+class Area {
 	
 	//查找城市或市區的鍵值(編號)
 	function search($city_or_area, $search_string){
