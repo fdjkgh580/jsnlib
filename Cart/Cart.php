@@ -1,6 +1,7 @@
 <?
+namespace Jsnlib;
 
-class Jsncar {
+class Cart {
 	
 	//session名稱
 	public $sess = 'session_jsncar';
