@@ -1,18 +1,19 @@
 <?
 session_start();
-include_once("jsnhform.php");
-$hform = new Jsnhform;
+include_once("Form.php");
+$form = new Jsnlib\Hash\Form;
 
-if (isset($_POST['go'])){	
+if (isset($_POST['go']))
+{	
 	
 	/* 1. 使用循環 */
-	//echo $hform->check();
+	//echo $form->check();
 	
 	/* 2. 不使用循環 */
-	echo $hform->check_die();
+	echo $form->check_die();
 	
 	die;
-	}
+}
 
 
 
@@ -21,7 +22,7 @@ if (isset($_POST['go'])){
 ?>
 <form name="" method="post">
     
-    <? $hform->put(); ?>
+    <? $form->put(); ?>
     <input name="write" type="text" value="write something...">
     <input name="go" class="" type="submit" value="GOGOGO" >
 

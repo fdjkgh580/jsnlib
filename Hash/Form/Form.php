@@ -1,5 +1,7 @@
 <?
-class Jsnhform {
+namespace Jsnlib\Hash;
+
+class Form {
 	
 	
 	//<input> 名稱
