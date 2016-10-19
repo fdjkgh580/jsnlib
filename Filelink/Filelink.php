@@ -5,8 +5,9 @@
  * 等PHP驗證後成功，再從session中尋找對應的陣列，取出他的實際路徑
  *
 */
+namespace Jsnlib;
 
-class Jsnfilelink {
+class Filelink {
 	
 	//此處使用的session名稱
 	private $sess = "jsnfilelink_session_name";
