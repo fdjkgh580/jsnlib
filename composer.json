@@ -10,7 +10,18 @@
     },
     "autoload": {
         "classmap": [
-            "Cart/Cart.php"
+            "Ao/src/Ao.php",
+            "Cart/Cart.php",
+            "Copy/Urlimg/Urlimg.php",
+            "Del/Del.php",
+            "Edit/Edit.php",
+            "Filelink/Filelink.php",
+            "Group/Group.php",
+            "Hash/Ajax/Ajax.php",
+            "Hash/Form/Form.php",
+            "Rand/Rand.php",
+            "Replace/Replace.php",
+            "Taiwan/Area/Area.php"
         ]
     }
 }
