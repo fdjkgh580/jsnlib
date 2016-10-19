@@ -10,7 +10,7 @@
     },
     "autoload": {
         "classmap": [
-            "Cart/Cart.php",
+            "Cart/Cart.php"
         ]
     }
 }
