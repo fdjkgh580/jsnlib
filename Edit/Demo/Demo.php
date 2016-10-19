@@ -1,9 +1,9 @@
 <?
-include_once("../../jsnpdo/jsnpdo.php");
-include_once("../jsnedit.php");
+require("../../jsnpdo/jsnpdo.php");
+require("../Edit.php");
 
 $j 			= new jsnpdo;
-$jsnedit 	= new jsnedit;
+$jsnedit 	= new Jsnlib\Edit;
 $j->connect("mysql", "localhost", "wood", "root", "1234");
 
 

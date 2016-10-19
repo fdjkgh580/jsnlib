@@ -1,5 +1,7 @@
 <?
-class Jsnedit{
+namespace Jsnlib;
+
+class Edit{
 	
 	public $class_jsnpdo; //以連接的jsnpdo物件
 	
