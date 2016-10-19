@@ -1,11 +1,11 @@
 <?
-include_once("Jsnarraygroup.php");
+include_once("Group.php");
 
 $ary    = array('a', 'b', 'c', 'd', 'e', 'f', 'g');
 
 echo "<pre>";
 // 一、指定每個盒子最多有多少個
-$result = Jsnarraygroup::length($ary, 3);
+$result = Jsnlib\Group::length($ary, 3);
 print_r($result);
 
 /*Array
@@ -34,7 +34,7 @@ print_r($result);
 
 
 // 二、指定總共有多少個盒子
-$result = Jsnarraygroup::each($ary, 3);
+$result = Jsnlib\Group::each($ary, 3);
 print_r($result);
 /*
 Array

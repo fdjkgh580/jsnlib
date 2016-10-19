@@ -1,6 +1,8 @@
 <?
+namespace Jsnlib;
+
 // 將陣列分組
-class Jsnarraygroup {
+class Group {
 
     /**
      * 指定每個盒子最多有多少個
