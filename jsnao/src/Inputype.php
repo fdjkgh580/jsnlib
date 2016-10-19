@@ -2,7 +2,9 @@
 /**
  * 輸入的格式過濾，最後都會回傳陣列
  */
-class Jsnao_inputype
+namespace Jsnlib\Ao;
+
+class Inputype
 {
     //唯一對外的呼叫方法。依照輸入的型態對應適合的方法
     static public function filter($mix)

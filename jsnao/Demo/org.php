@@ -1,5 +1,5 @@
 <?
-include_once("../jsnao.php");
+include_once("../src/Ao.php");
 
 // 購物車
 $cart = array
