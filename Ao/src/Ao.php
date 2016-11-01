@@ -2,9 +2,12 @@
 /*
  * 取材自網友 http://bbs.phpchina.com/thread-123682-1-1.html 
  */
+
+namespace Jsnlib;
+
 include_once 'Inputype.php';
 
-class Jsnao extends ArrayObject
+class Ao extends \ArrayObject
 {
     protected $version = "1.1.4";
 
@@ -14,7 +17,7 @@ class Jsnao extends ArrayObject
      */
     public function __construct($mix = null)
     {
-        $array = Jsnlib\Ao\inputype::filter($mix);
+        $array = \Jsnlib\Ao\inputype::filter($mix);
         foreach ($array as &$value)
         {
             is_array($value) && $value = new self($value);

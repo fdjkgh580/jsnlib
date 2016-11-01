@@ -13,7 +13,7 @@ $cart = array
         'name'  => 'water'
     )
 );
-$cart = new jsnao($cart);
+$cart = new Jsnlib\Ao($cart);
 
 // 取值
 $cart->A001->name; //output: apple

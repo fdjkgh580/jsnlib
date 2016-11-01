@@ -10,7 +10,7 @@ $cart = array
     )
 );
 
-$cart = new Jsnao($cart);
+$cart = new Jsnlib\Ao($cart);
 
 // 取值
 $cart['001']['name']; // output: apple
