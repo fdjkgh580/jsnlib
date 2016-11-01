@@ -4,9 +4,7 @@ include_once("../Filelink.php");
 $Filelink = new Jsnlib\Filelink;
 
 //驗證
-$param['name']		= $_GET['name'];
-$param['hash'] 		= $_GET['hash'];
-$realfile = $Filelink->chk($param);
+$realfile = $Filelink->check($_GET['name'], $_GET['hash']);
 if (empty($realfile)) die;
 
 header("Content-Type: application/octec-stream");
