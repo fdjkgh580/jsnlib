@@ -1,5 +1,6 @@
 <?
-include_once("../src/Ao.php");
+require_once '../../vendor/autoload.php';
+
 
 // 購物車
 $cart = array

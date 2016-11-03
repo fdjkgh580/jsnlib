@@ -3,7 +3,8 @@
  * 同商品不同屬性時，primaryid也就不一樣了
  */
 session_start();
-include_once("Cart.php");
+require_once '../vendor/autoload.php';
+
 unset($_SESSION);
 $Cart = new Jsnlib\Cart;
 

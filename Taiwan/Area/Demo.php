@@ -1,31 +1,43 @@
 <?
-include_once("Area.php");
-$jsntaiwanarea = new Jsnlib\Taiwan\Area;
+require_once '../../vendor/autoload.php';
 
-//1.查詢城市編號, 得到台北市
+$taiwanarea = new Jsnlib\Taiwan\Area;
+
+//所有城市
+echo "所有城市<br>";
+$citylist = $taiwanarea->city()->get();
+print_r($citylist);
+echo "<hr>";
+
+
+//查詢城市編號, 得到台北市
 echo "查詢1001<br>";
-echo $jsntaiwanarea->city('1001') . "<hr>";
+echo $taiwanarea->city('1001')->get() . "<hr>";
 
-//2.查詢城市編號與區域編號, 得到台北市中正區
+
+//查詢城市編號與區域編號, 得到 中正區
 echo "查詢1001, 100<br>";
-echo $jsntaiwanarea->area('1001', '100') . "<hr>";
+echo $taiwanarea->city('1001')->area('100')->get() . "<hr>";
 
-//3.查詢城市編號底下所有區域, 得到高雄市底下的所有區域陣列
+//查詢城市編號底下所有區域, 得到高雄市底下的所有區域陣列
 echo "取得1016所有的區域<br>";
-$Kao = $jsntaiwanarea->all_area('1016');
-print_r($Kao);
+$arealist = $taiwanarea->city('1016')->area()->get();
+print_r($arealist);
 echo "<hr>";
 
-
-//4.查詢城市名稱關鍵字"高", 得到城市陣列
+//查詢城市名稱關鍵字"高", 得到城市陣列
 echo "取得關鍵字 台 的所有城市<br>";
-$ary = $jsntaiwanarea->search("city", "高");
-print_r($ary);
+// $ary = $taiwanarea->search("city", "高");
+// print_r($ary);
+// echo "<hr>";
+$list = $taiwanarea->city()->search("高")->get();
+print_r($list);
 echo "<hr>";
 
-//5.查詢區域關鍵字"平", 得到所有區域陣列
+
+//查詢區域關鍵字"平", 得到所有區域陣列
 echo "取得關鍵字 平 的所有區域<br>";
-$ary = $jsntaiwanarea->search("area", "平");
+$ary = $taiwanarea->city(1003)->area()->search("平")->get();
 print_r($ary);
 echo "<hr>";
 

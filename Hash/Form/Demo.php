@@ -1,7 +1,10 @@
 <?
 session_start();
-include_once("Form.php");
+require_once '../../vendor/autoload.php';
+
 $form = new Jsnlib\Hash\Form;
+
+if (!isset($_POST['go'])) $_POST['go'] = NULL;
 
 if (isset($_POST['go']))
 {	
@@ -10,8 +13,10 @@ if (isset($_POST['go']))
 	//echo $form->check();
 	
 	/* 2. 不使用循環 */
-	echo $form->check_die();
+	if ($form->check_die() !== true) die("程序已執行完畢，請返回前一頁重新操作");
 	
+    echo "success";
+
 	die;
 }
 
@@ -23,7 +28,7 @@ if (isset($_POST['go']))
 <form name="" method="post">
     
     <? $form->put(); ?>
-    <input name="write" type="text" value="write something...">
+    <input name="write" type="text" value="" placeholder="write something...">
     <input name="go" class="" type="submit" value="GOGOGO" >
 
 

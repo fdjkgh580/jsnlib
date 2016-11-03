@@ -1,8 +1,11 @@
 <?
 session_start();
-include_once("Ajax.php");
+require_once '../../vendor/autoload.php';
 
-$Ajax = new Jsnlib\hash\Ajax;
+
+$Ajax = new Jsnlib\Hash\Ajax;
+
+if (empty($_POST['act'])) $_POST['act'] = null;
 
 if ($_POST['act'] == "test") {
 	
@@ -17,7 +20,6 @@ if ($_POST['act'] == "test") {
 	echo json_encode($array);
 	die;
 	}
-
 
 
 /*

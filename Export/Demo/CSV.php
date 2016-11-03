@@ -1,6 +1,5 @@
 <?
-require_once '../src/Export.php';
-require_once '../../Ao/src/Ao.php';
+require_once '../../vendor/autoload.php';
 
 //CSV
 $result = Jsnlib\Export::csv(new Jsnlib\Ao(

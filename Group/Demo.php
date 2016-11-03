@@ -1,5 +1,6 @@
 <?
-include_once("Group.php");
+require_once '../vendor/autoload.php';
+
 
 $ary    = array('a', 'b', 'c', 'd', 'e', 'f', 'g');
 

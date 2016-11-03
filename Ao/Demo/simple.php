@@ -1,6 +1,5 @@
 <?
-include_once("../src/Ao.php");
-
+require_once '../../vendor/autoload.php';
 
 $cart = array
 (
