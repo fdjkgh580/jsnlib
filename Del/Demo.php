@@ -1,5 +1,6 @@
 <?
-include_once("Del.php");
+require_once '../vendor/autoload.php';
+
 
 $Del = new Jsnlib\Del;
 $result = $Del->get("D");
@@ -10,10 +11,10 @@ print_r($result);
 // $result = $Del->all();
 // if ($result) echo "清除資料夾完畢!";
 
-/*
+
 //二、刪除自己之下
-$result = $Del->under();
-if ($result) echo "清除資料夾完畢!";
-*/
+// $result = $Del->under();
+// if ($result) echo "清除資料夾完畢!";
+
 
 ?>

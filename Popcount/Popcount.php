@@ -8,7 +8,8 @@
 */
 namespace Jsnlib;
 
-class Popcount {
+class Popcount 
+{
 	
 	//SESSION 名稱
 	public $sess_name;

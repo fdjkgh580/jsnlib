@@ -1,5 +1,5 @@
 <?
-include_once("../src/Ao.php");
+require_once '../../vendor/autoload.php';
 
 // 購物車
 $cart = array
@@ -10,7 +10,7 @@ $cart = array
     )
 );
 
-$cart = new Jsnao($cart);
+$cart = new Jsnlib\Ao($cart);
 
 
 // 取值

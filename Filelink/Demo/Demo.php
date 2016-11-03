@@ -1,6 +1,7 @@
 <?
 session_start();
-include_once("../Filelink.php");
+require_once '../../vendor/autoload.php';
+
 $Filelink = new Jsnlib\Filelink;
 $Filelink->url("fileimg.php");
 

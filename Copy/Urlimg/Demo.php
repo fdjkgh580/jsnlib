@@ -1,5 +1,6 @@
 <?
-include_once("Urlimg.php");
+require_once '../../vendor/autoload.php';
+
 $Urlimg = new Jsnlib\Copy\Urlimg;
 
 

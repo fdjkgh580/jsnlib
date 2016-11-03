@@ -2,67 +2,212 @@
 namespace Jsnlib\Taiwan;
 
 //台灣行政區域
-class Area {
-	
-	//查找城市或市區的鍵值(編號)
-	function search($city_or_area, $search_string){
-		
-		$return_array = array();
-		
-		if (empty($search_string)) die("第二個參數請勿空白");
+class Area 
+{
+	//記錄使用者需要的動作
+	private $action;
 
-		//找城市
-		if ($city_or_area == "city") {
-			$DataList = $this->data_city();
-			if (is_array($DataList)) {
-				foreach ($DataList as $key => $val) {
-					$rmval = str_replace(" ", NULL, $val); //去除字間的空白
-					$num = substr_count($rmval, $search_string); //出現的次數
-					if ($num > 0) $return_array[$key] = $val;
-					}
-				}
-			}
+	// 倉儲，紀錄使用者的操作結果
+	private $storage;
 
-		//找區域
-		elseif ($city_or_area == "area") {
-			$DataList = $this->data_area();
-			if (is_array($DataList)) {
-				foreach ($DataList as $citykey => $areagroup) {
-					foreach ($areagroup as $areakey => $areaname) {
-						$rmareaname	= str_replace(" ", NULL, $areaname); //去除字間的空白
-						$num 		= substr_count($rmareaname, $search_string); //出現的次數
-						if ($num > 0) $return_array[$areakey] = $areaname;
-						}
-					}
-				}
-			}
+	public function __construct()
+	{
+		$this->init_storage();
+		$this->action = [];
+	}
 
-		else die("請指定第一個參數為city或area。");
-		
-		return $return_array;
+	// 初始化倉儲
+	private function init_storage()
+	{
+		$this->storage = new \stdClass;
+		$this->storage->city = new \stdClass;
+		$this->storage->city->key = null;
+		$this->storage->city->val = null;
+
+		$this->storage->area = new \stdClass;
+		$this->storage->area->key = null;
+		$this->storage->area->val = null;
+	}
+
+	// 重設初始化
+	public function reset()
+	{
+		unset($this->storage->city->key, $this->storage->city->val);
+		unset($this->storage->area->key, $this->storage->area->val);
+		$this->action = [];
+	}
+
+	// 加入動作
+	protected function action(array $actionlist = [])
+	{
+		foreach ($actionlist as $action)
+		{
+			array_push($this->action, $action);
 		}
+	}
+
+	//是否有這項動作
+	protected function has_action($key):bool
+	{
+		return in_array($key, $this->action) ? true : false;
+	}
+
+	public function get()
+	{
+		$has_city = $this->has_action("city");
+		$has_area = $this->has_action("area");
+
+		// city
+		if ($has_city === true and $has_area === false)
+		{
+			$result = $this->storage->city->val;
+		}
+		// city, area
+		elseif ($has_city === true and $has_area === true)
+		{
+			$result = $this->storage->area->val;
+		}
+
+		$this->reset();
+		return $result;
+	}
+
+	private function fileter($val, $search_string)
+	{
+		$rmval = str_replace(" ", NULL, $val); //去除字間的空白
+		$num = substr_count($rmval, $search_string); //出現的次數
+		return ($num > 0) ? $val : false; 
+	}
+	
+	//搜尋
+	public function search(string $text)
+	{
+		$citylist = isset($this->storage->city->val) ? $this->storage->city->val : false;
+		$arealist = isset($this->storage->area->val) ? $this->storage->area->val : false;
+
+		$has_city = $this->has_action("city");
+		$has_area = $this->has_action("area");
+
+		$ary      = [];
+
+		// city
+		if ($has_city === true and $has_area === false) 
+		{
+			if (is_array($citylist)) foreach ($citylist as $citykey => $cityval) 
+			{
+				$result = $this->fileter($cityval, $text);
+				if ($result === false) continue;
+				$ary[$citykey] = $result;
+			}
+			else throw new \Exception("城市列表不可指定");
+
+			$this->storage->city->val = $ary;
+		}
+		// area
+		else if ($has_city === true and $has_area === true)
+		{
+			if (is_array($arealist)) foreach ($arealist as $areakey => $areaval) 
+			{
+				$result = $this->fileter($areaval, $text);
+				if ($result === false) continue;
+				$ary[$areakey] = $result;
+			}
+			else throw new \Exception("error");
+
+			$this->storage->area->val = $ary;
+		}
+		else 
+			throw new \Exception("指定錯誤");
+			
+		return $this;
+	}
 	
 	//取得城市名稱
-	function city ($city_val) {
-		$C = $this->data_city();
-		return $C[$city_val];
-		}
+	public function city ($key = false) 
+	{
+		$this->action(['city']);
+		$citylist = $this->data_city();
+
+		$this->storage->city->key   = $key; 
+		$this->storage->city->val   = ($key === false) ? $citylist : $citylist[$key]; 
+
+		return $this;
+	}
 		
 	//取得區域名稱	
-	function area ($city_val, $area_val) {
-		$A = $this->data_area();
-		return $A[$city_val][$area_val];
+	public function area ($key = false) 
+	{
+		try
+		{
+			$this->action(['area']);
+
+			//先取得 area
+			$areslist = $this->data_area();
+
+			// 有先使用 city?
+			if (empty($this->storage->city->val)) throw new \Exception("請先指定城市");
+
+			// city 是陣列
+			$ary = [];
+			if (is_array($this->storage->city->val)) 
+			{
+				$this->storage->area->key = $key;
+				$this->storage->area->val = [];
+
+				foreach ($this->storage->city->val as $citykey => $cityval)
+				{
+					$area = ($key === false) ? 
+						$areslist[$citykey] : 
+						$areslist[$citykey][$key];
+					
+					foreach ($area as $areakey => $areaval)
+					{
+						$this->storage->area->val[$areakey] = $areaval;
+					}
+
+				}
+
+				// print_r($this->storage->area);
+				// die;
+			}
+			// 只有單一 city
+			else 
+			{
+				$area = ($key === false) ? 
+					$areslist[$this->storage->city->key] : 
+					$areslist[$this->storage->city->key][$key];
+
+				if (is_array($area)) 
+				{
+					$this->storage->area->key = $key;
+					$this->storage->area->val = [];
+					$this->storage->area->val = $area;
+				}
+				else 
+				{
+					$this->storage->area->key = $key;
+					$this->storage->area->val = $area;
+				}
+				
+			}
+			
+
+			
+
+			return $this;
 		}
-	
-	//取得某城市下的所有區域
-	function all_area ($city_val) {
-		$A = $this->data_area();
-		return $A[$city_val];
+		catch(\Exception $e)
+		{
+
 		}
+		
+		// return $A[$key][$area_val];
+	}
 	
 	
 	//城市陣列
-	function data_city() {
+	protected function data_city() 
+	{
 		return array(
 			"1001" => "臺北市",
 			"1002" => "基隆市",
@@ -87,11 +232,12 @@ class Area {
 			"1021" => "花蓮縣",
 			"1022" => "金門縣",
 			"1023" => "連江縣",
-			);
-		}
+		);
+	}
 	
 	//區域陣列
-	function data_area(){
+	protected function data_area()
+	{
 		return array(	
 			/*  開始  */		
 			"1001" => array(
@@ -510,6 +656,5 @@ class Area {
 							),
 			/*  結束  */					
 			);
-		}
 	}
-?>
+}
