@@ -1,7 +1,8 @@
 <?
-require_once 'src/Export.php';
-require_once '../Ao/src/Ao.php';
+require_once '../src/Export.php';
+require_once '../../Ao/src/Ao.php';
 
+//CSV
 $result = Jsnlib\Export::csv(new Jsnlib\Ao(
 [
     'TitleInfo' => ['編號', '姓名', '電話'],
@@ -10,7 +11,7 @@ $result = Jsnlib\Export::csv(new Jsnlib\Ao(
         0 => ['1', '張先生', '0978-235-235'],
         1 => ['4', '許小姐', '0978-233-111']
     ],
-    'return_map' => false,
+    'return_map' => true,
 ]));
 
 print_r($result);

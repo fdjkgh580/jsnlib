@@ -50,16 +50,44 @@ class CSV extends \Jsnlib\Abs\Export
         echo $data;
     }
 
+    // 轉換編碼
+    protected function iconv($param)
+    {
+        // 若要轉編碼
+        if ( isset($param->iconv_from) and isset($param->iconv_to) ) 
+        {
+            //先轉換標題
+            foreach ($param->TitleInfo as $key => $TitleCel)
+            {
+                $param->TitleInfo[$key] = iconv($param->iconv_from, $param->iconv_to, $TitleCel);
+            }
+
+            //再轉換多筆的資料列內容
+            foreach ($param->ContentList as $key => $ContentInfo)
+            {
+                //取出該列的儲存格
+                foreach ($ContentInfo as $ckey => $ContentCel)
+                {
+                    $ContentInfo[$ckey] = iconv($param->iconv_from, $param->iconv_to, $ContentCel);
+                }
+                
+                //放回該列
+                $param->ContentList[$key] = $ContentInfo;
+            }
+        }
+
+        return $param;
+    }
 
 
     /**
      * 快速匯出
-     * @param  $TitleInfo    必 | 標題
-     * @param  $ContentList  必 | 批次的內容陣列
-     * @param  $return_map   必 | true返回陣列地圖 false直接匯出
-     * @param  $iconv_from   選 | 編碼從哪   (如 utf-8)
-     * @param  $iconv_to     選 | 編碼轉到哪 (如 big5)
-     * @return               返回CSV文字格式 
+     * @param  $TitleInfo    object     必 | 標題
+     * @param  $ContentList  object     必 | 批次的內容陣列
+     * @param  $return_map   bool       必 | true返回陣列地圖 false直接匯出
+     * @param  $iconv_from   string     選 | 編碼從哪   (如 utf-8)
+     * @param  $iconv_to     string     選 | 編碼轉到哪 (如 big5)
+     * @return                          返回CSV文字格式 
      */
     public function quick_export($param)
     {
@@ -69,28 +97,7 @@ class CSV extends \Jsnlib\Abs\Export
             if (!isset($param->ContentList)) throw new \Exception("Undefined ContentList.");
             if (!isset($param->return_map)) throw new \Exception("Undefined return_map.");
             
-            // 若要轉編碼
-            if ( isset($param->iconv_from) and isset($param->iconv_to) ) 
-            {
-                //先轉換標題
-                foreach ($param->TitleInfo as $key => $TitleCel)
-                {
-                    $param->TitleInfo[$key] = iconv($param->iconv_from, $param->iconv_to, $TitleCel);
-                }
-
-                //再轉換多筆的資料列內容
-                foreach ($param->ContentList as $key => $ContentInfo)
-                {
-                    //取出該列的儲存格
-                    foreach ($ContentInfo as $ckey => $ContentCel)
-                    {
-                        $ContentInfo[$ckey] = iconv($param->iconv_from, $param->iconv_to, $ContentCel);
-                    }
-                    
-                    //放回該列
-                    $param->ContentList[$key] = $ContentInfo;
-                }
-            }
+            $this->iconv($param);
 
             //標題
             $this->set_title($param);

@@ -1,5 +1,5 @@
 <?
-namespace Jsnlib\hash;
+namespace Jsnlib\Hash;
 /*
  * 提供由AJAX送出表單時，需要驗證的hash。比對成功後，會自動拋回一組新的hash值，以增加安全性。
  */
