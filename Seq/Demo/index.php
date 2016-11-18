@@ -1,6 +1,6 @@
 <?
-include_once('jsnseq.php');
-$jsnseq = new Jsnseq;
+require_once ('../Seq.php');
+$seq = new Jsnlib\Seq;
 $param = new stdClass;
 ?>
 <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
@@ -9,9 +9,10 @@ $param = new stdClass;
 
 <script>
 //3.必要的！提供 sequence_table() 的callback function 
-function success_sequence_table(data) {
-	alert(data)
-	}
+function success_sequence_table(data) 
+{
+    alert(data)
+}
 
 </script>
 
@@ -25,16 +26,16 @@ function success_sequence_table(data) {
 // @seq_startval 排序的第一個起始值
 // AJAX 成功後會呼叫 success_sequence_table(data)
 
-$param->selector				=		"ul";
-$param->child_selector			=		"li";
-$param->send_selector			=		"button";
-$param->ajaxurl					=		"ajax.php";
-$jsnseq->put($param);
+$param->selector                =       "ul";
+$param->child_selector          =       "li";
+$param->send_selector           =       "button";
+$param->ajaxurl                 =       "ajax.php";
+$seq->put($param);
 ?>
 <!--
-	2.
-    data-seq-startval 	為排序的起始值
-    data-id				為該項目的唯一編號
+    2.
+    data-seq-startval   為排序的起始值
+    data-id             為該項目的唯一編號
 -->
 <ul data-seq-startval="10">
     <li data-id="1">1.美語</li>

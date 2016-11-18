@@ -3,22 +3,23 @@
  * 使用jQuery ui 做排序
  *
  */
-class Jsnseq
+namespace Jsnlib;
+
+class Seq
 {
 	
 	private $param;
 	
+	/**
+	 * @param   selector         指定要排序的父元素   
+	 * @param   child_selector   要排序的子元素
+	 * @param   send_selector    綁定的送出元素
+	 * @param   ajaxurl          AJAX送出的網址
+	 * @param   seq_startval     排序的第一個起始值
+	 * @return                   成功後會呼叫 Javascript success_sequence_table(data)                 
+	 */
 	public function put($param)
-	{
-		
-		// 
-		// @selector 指定要排序的父元素
-		// @child_selector 要排序的子元素
-		// @send_selector綁定的送出元素
-		// @ajaxurl AJAX送出的網址
-		// @seq_startval 排序的第一個起始值
-		// AJAX 成功後會呼叫 success_sequence_table(data)
-		
+	{		
 		$this->param = $param;
 		?>
 		<script>
@@ -42,19 +43,19 @@ class Jsnseq
 						 
 						urstring = urstring + "&" + id + "=" + seq;
 						 
-						});
-					console.log(urstring);
+					});
+					// console.log(urstring);
 					 
 					$.post(ajaxurl, {
 						'jsnseq_querystring' : urstring
 						}, function (data) {
 							success_sequence_table(data)
-						})
+					})
 								 
-					});
+				});
 				
-				})
-			}
+			})
+		}
 		sequence_table("<?=$param->selector?>", "<?=$param->child_selector?>", "<?=$param->send_selector?>", "<?=$param->ajaxurl?>");		
         </script>
 		<?
@@ -78,7 +79,7 @@ class Jsnseq
 	}
 	
 	
-	public function get()
+	public function get($isfilp = 1)
 	{
 		//過濾前後符號
 		$jsnseq_querystring = $_POST['jsnseq_querystring'];
@@ -86,6 +87,13 @@ class Jsnseq
 		$jsnseq_querystring = trim($jsnseq_querystring, "& ");
 		 
 		parse_str($jsnseq_querystring, $data);
+
+		// 鍵值對調
+		if ($isfilp == 1)
+		{
+			$data = array_flip($data);
+		}
+		
 		return $data;
 	}
 	
