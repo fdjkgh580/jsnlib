@@ -129,6 +129,7 @@ function curlfun($url, $postdataarray)
  */
 function status_comb($status, $message, $data = NULL, $isjson_encode = 1)
 {
+	$obj          = new \stdClass;
 	$obj->status  = $status;
 	$obj->message = $message;
 	$obj->data    = $data;
