@@ -69,13 +69,13 @@ function send_mail($param)
 
 		else 
 		{
-		    return output_status_comb_jsonp($_GET['callback'], "success", "發送成功", NULL, $isjson_encode = 1, $isreturn = 1);
+		    return output_status_comb_jsonp($_GET['callback'], "success", "發送成功", null, $isjson_encode = true, $isreturn = true);
 		}
 
 	}
 	catch(Exception $e)
 	{
-		return output_status_comb_jsonp($_GET['callback'], "error", $e->getMessage(), NULL, $isjson_encode = 1, $isreturn = 1);
+		return output_status_comb_jsonp($_GET['callback'], "error", $e->getMessage(), null, $isjson_encode = true, $isreturn = true);
 	}
 }
 
@@ -121,29 +121,30 @@ function curlfun($url, $postdataarray)
 
 /**
  * 組合的執行結果
- * @param  $status        "success" 或 "error"
+ * @param  $status        "success" 或 "error" 或其他語意狀態
  * @param  $message       顯示的提示訊息
  * @param  $data          物件或陣列的回傳資料
  * @param  $isjson_encode 預設返回json格式
- * @return 返回組合的物件或是json格式
+ * @return                返回組合的物件或是json格式
  */
-function status_comb($status, $message, $data = NULL, $isjson_encode = 1)
+function status_comb($status, $message, $data = null, $isjson_encode = true)
 {
+	$obj          = new \stdClass;
 	$obj->status  = $status;
 	$obj->message = $message;
 	$obj->data    = $data;
-	return $isjson_encode == 1 ? json_encode($obj) : $obj;
+	return $isjson_encode == true ? json_encode($obj) : $obj;
 }
 
 /**
  * 自動判斷輸出 status_comb() 的執行結果
- * @param  $status        "success" 或 "error"
+ * @param  $status        "success" 或 "error" 或其他語意狀態
  * @param  $message       顯示的提示訊息
  * @param  $data          物件或陣列的回傳資料
  * @param  $isjson_encode 預設返回json格式
- * @return 返回組合的物件或是json格式
+ * @return                返回組合的物件或是json格式
  */
-function output_status_comb($status, $message, $data = NULL, $isjson_encode = 1)
+function output_status_comb($status, $message, $data = null, $isjson_encode = true)
 {
 	$result = status_comb($status, $message, $data, $isjson_encode);
 	if (is_object($result)) print_r($result);
@@ -157,20 +158,20 @@ function output_status_comb($status, $message, $data = NULL, $isjson_encode = 1)
  * header("Content-type: application/json; charset=utf-8");
  * 該函數可以取代 output_status_comb() 了，因為功能進階。只是寫法不同。
  * 
- * @param  [type]  $callback_name 當需要 jsonp 回應的 callback 名稱
- * @param  $status        "success" 或 "error"
- * @param  $message       顯示的提示訊息
- * @param  $data          物件或陣列的回傳資料
- * @param  $isjson_encode 預設返回json格式
- * @param  $isreturn      預設輸出，設為1可在最後返回。
+ * @param  $callback_name    string         當需要 jsonp 回應的 callback 名稱
+ * @param  $status           string         "success" 或 "error"
+ * @param  $message          string         顯示的提示訊息
+ * @param  $data             obj | array    物件或陣列的回傳資料
+ * @param  $isjson_encode    bool           預設返回json格式
+ * @param  $isreturn         bool           預設 true 可在最後返回。
  * 
  */
-function output_status_comb_jsonp($callback_name = NULL, $status, $message, $data = NULL, $isjson_encode = 1, $isreturn = 0)
+function output_status_comb_jsonp($callback_name = null, $status, $message, $data = null, $isjson_encode = true, $isreturn = true)
 {
 	$result = status_comb($status, $message, $data, $isjson_encode);
 	if (is_object($result)) 
 	{
-		if ($isreturn == 0) print_r($result);
+		if ($isreturn == false) print_r($result);
 		else return $result;
 	}
 	else
@@ -178,12 +179,12 @@ function output_status_comb_jsonp($callback_name = NULL, $status, $message, $dat
 		if (empty($callback_name)) 
 		{
 
-			if ($isreturn == 0) echo $result; //json 格式
+			if ($isreturn == false) echo $result; //json 格式
 			else return $result;
 		}
 		else 
 		{
-			if ($isreturn == 0) echo "{$callback_name}($result)"; //jsonp 格式
+			if ($isreturn == false) echo "{$callback_name}($result)"; //jsonp 格式
 			else return "{$callback_name}($result)"; //jsonp 格式
 		}
 	}
@@ -222,9 +223,6 @@ function js_form_action($url)
 {
 	return js("form_action", array("url" => $url));
 }
-
-
-
 
 
 //擷取字串
@@ -277,10 +275,6 @@ function WordLimit ($String , $Num = 100 , $OverString = "...", $HTML_LIMIT = tr
 	}
 
 
-
-
-
-
 //一維陣列命名 例如自動把 $ary['first'] 轉換成全域變數 $first
 function name_array($ary)
 {
@@ -305,12 +299,12 @@ function name_array($ary)
  *                                  my_video_insert          1: (預設)使用影片插入 plugin
  * 
  */
-function tinyMCE4($id, $JSp=NULL, $height="400px", $weight="100%", $param = NULL)
+function tinyMCE4($id, $JSp=null, $height="400px", $weight="100%", $param = null)
 {
 	
 	$document_base_url 		= (!isset($param->document_base_url)) ? "" : $param->document_base_url; //網站基本位置
-	$my_albumupload_insert	= (!isset($param->my_albumupload_insert) or $param->my_albumupload_insert == 1) ? "my_albumupload_insert" : NULL;
-	$my_video_insert		= (!isset($param->my_video_insert) or $param->my_video_insert == 1) ? "my_video_insert" : NULL;
+	$my_albumupload_insert	= (!isset($param->my_albumupload_insert) or $param->my_albumupload_insert == 1) ? "my_albumupload_insert" : null;
+	$my_video_insert		= (!isset($param->my_video_insert) or $param->my_video_insert == 1) ? "my_video_insert" : null;
 	?>
 	<script type="text/javascript" src="<?=$JSp?>tinymce-4.2.5/tinymce.min.js"></script>
     <script type="text/javascript">
