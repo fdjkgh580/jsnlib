@@ -22,7 +22,8 @@
             "Popcount",
             "Rand",
             "Seq",
-            "Taiwan"
+            "Taiwan",
+            "Function.php"
         ]
     }
 }
