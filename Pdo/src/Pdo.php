@@ -1,80 +1,18 @@
 <?php
+namespace Jsnlib;
 
-/**
- * v3.4.5
- * - 添加 __call() 第三個參數，決定是否自動 quote()。主要可用在 
- *   $j->_id("col + 1", false); //使用如 where id = col + 1
- *   $j->_id("col + 1"); //則會是 where id = 'col + 1' 。
- * - 解決 iary() 在 debug 的時候會出現無法替換 POST/GET 的問題。
- * - 簡化 _call __callStatic
- *
- * 
- * v3.4.4
- * - 解決 where in 在 debug 的時候，欄位值無法正常替換顯示
- * - 解決 update 在 where 子句的欄位值多了 ''
- * - 修正如 where in 在使用陣列指定時，原本如 array(1, 3) 轉換為 where id in ('1', '3')時，
- *   會自動添加 '' 的問題，如今修改為不自動添加 ''。這樣當使用SQL函數時如 array("now()", 3) 時，
- *   才會被轉換為 where id in (now(), 3)。
- *   
- *   
- * 
- * v3.4.3
- * - 解決當欄位名稱出現部分雷同文字時，在debug模式下的值出現取代錯誤
- * - 修正上述修正後的併發狀況，出現在iary()與uary()是否有where子句時，是否自動添加 ''
- * 
- * v3.4.2
- * - 修正in()裡 uniqid()的bug 因版本的問題 造成無法給定唯一值
- *
- * 
- * v3.4.1
- * - 添加除錯樣式 deubg()
- * - 修正 jsnpdo.php 的開頭出現空白，造成提早輸出的問題
- *
- *
- * v3.4
- * - 修正 CSS 除錯樣式色彩
- * - 添加不使用 '' 的寫法。處理需要使用 MySQL 的內建函數如 NOW() 的時候
- * - 修正某些時候 PDO 執行發生錯誤不會顯示錯誤訊息
- * - quote() 不再使用 PDO::quote()。
- *
- * v3.3
- * - 切換資料庫功能
- * - 工廠模式建議使用虛擬方法。日後將考慮移除實體工廠
- * - 修改核心為 prepare() + execute()
- * - 修正指令樣式, 包含傳統寫法與工廠寫法
- *
- * v3.2
- * 增加工廠模型寫法。
- * 擴充快取功能，可以取得快取鍵、快取內容、刪除單一快取、清空快取、指定快取存放位置
- *
- * v3.1
- * 增加原名寫法。
- *   select() 等同 sel()
- *   select_one() 等同 selone()
- *   insert() 等同 iary()
- *   uary() 等同 uary()
- *
- *
- * v3.0
- * 必須使用 Jsnao ArrayObject
- * 若使用快取，需引用 phpfastcache.php
- */
+// 抽象類別，定義了公用程序
+require_once "Abstpdo.php";
 
-// 抽象類別，定義了公用程序如快取
-include_once ("Abstract_Jsnpdo.php");
-
-// 工廠產生模型。需在較新的PHP方可運作。
-include_once ("Jsnpdo_factory.php");
-
-class Jsnpdo extends Abstract_Jsnpdo
+class Pdo extends Abstpdo
 {
     // 放置當前與PDO溝通的連接資源
     public static $PDO;
 
     // 使用PDO的fetch()或fetchAll()的參數，
-    // PDO::FETCH_ASSOC 為陣列，PDO預設設 PDO::FETCH_BOTH提取兩種型態，設 PDO::FETCH_OBJ 為物件
+    // \PDO::FETCH_ASSOC 為陣列，PDO預設設 \PDO::FETCH_BOTH提取兩種型態，設 \PDO::FETCH_OBJ 為物件
     // 提取物件的效能最高，但我們取出陣列，再透過 Jsnao 轉換成 ArrayObject
-    public static $fetch_type = PDO::FETCH_ASSOC;
+    public static $fetch_type = \PDO::FETCH_ASSOC;
 
     // 預設使用try catche系統設置
     public static $is_trycatch = "1";
@@ -106,14 +44,15 @@ class Jsnpdo extends Abstract_Jsnpdo
     //執行SQL前的字串
     public static $sql;
 
-    //快取的存活間
-    public static $cache_life = 3;
-
     //$_POST 或 $_GET, 在 query() 時可以呼叫已取得設定的是 POST 或 GET 陣列
     public static $request_ary;
 
     public function __construct()
     {
+        if (!class_exists("Jsnlib\Ao")) 
+        {
+            throw new \Exception("請先引用 Jsnlib\Ao");
+        }
     }
 
     /**
@@ -128,17 +67,17 @@ class Jsnpdo extends Abstract_Jsnpdo
     public static function connect($sql_database, $hostname, $dbname, $user, $password)
     {
         try
-
         {
-            $pdo = new PDO("{$sql_database}:host={$hostname};dbname={$dbname}", $user, $password);
+            $pdo = new \PDO("{$sql_database}:host={$hostname};dbname={$dbname}", $user, $password);
 
             $pdo->query("SET NAMES 'UTF8'");
 
             self::$PDO = $pdo;
 
-            return new Jsnpdo;
+            return new Pdo;
         }
-         catch (PDOException $e) {
+        catch (PDOException $e) 
+        {
             self::warning('stop', '資料庫連接錯誤: ' . $e->getMessage());
         }
     }
@@ -150,18 +89,20 @@ class Jsnpdo extends Abstract_Jsnpdo
      * @param   $debug_quote
      * @return                PDO狀態的資源物件 或 SQL 字串
      */
-    public static function query($sql, $status_debug, $debug_quote)
+    public static function query($sql, $status_debug = null, $debug_quote = false)
     {
 
         //可外部讀取檢視
         self::$sql = $sql;
 
-        if (self::$get_string == 1) {
+        if (self::$get_string == 1) 
+        {
             return $sql;
         }
 
         // debug 純文字
-        if (self::get_debug($status_debug) == 1) {
+        if (self::get_debug($status_debug) == 1) 
+        {
 
             $msg = self::sql_replace_condition($sql, $debug_quote);
 
@@ -169,17 +110,17 @@ class Jsnpdo extends Abstract_Jsnpdo
         }
 
         //正確執行
-        else{
+        else
+        {
             // 不使用 php 本地模式, 避免造成 sql injection。
             // php 5.3.6 以上已經處理這個問題了。無論 true 或 false 都可以
-            // self::$PDO->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-
+            // self::$PDO->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
             $result = self::$PDO->prepare($sql);
 
-            if (!$result) {
+            if (!$result) 
+            {
                 $error_ary = $result->errorinfo();
-
-                throw new Exception("PDO 執行 query 發生錯誤：{$error_ary[2]}");
+                throw new \Exception("PDO 執行 query 發生錯誤：{$error_ary[2]}");
             }
 
             // 若有要替換值的轉換表, 也就是將如 id = :id 轉換為 id = 1
@@ -188,26 +129,30 @@ class Jsnpdo extends Abstract_Jsnpdo
 
             // 過濾掉不存在SQL中的項目。
             // 如 array(:myid => 1) 不存在SQL字串，將被剔除, 否則多餘的參數會錯誤
-            foreach ($execute_map as $token => $token_val) {
-                if (substr_count($sql, $token) == 0) {
+            foreach ($execute_map as $token => $token_val) 
+            {
+                if (substr_count($sql, $token) == 0) 
+                {
                     unset($execute_map[$token]);
                 }
             }
 
-            foreach ($execute_map as $token => $token_val) {
+            foreach ($execute_map as $token => $token_val) 
+            {
                 $execute_map[$token] = trim($token_val, "'");
             }
 
             $bool = $result->execute($execute_map);
 
-            if ($bool == true) {
+            if ($bool == true) 
+            {
                 return $result;
             }
 
             // 準備給 PDO 的 execute() 對應陣列
             $error_ary = $result->errorinfo();
 
-            throw new Exception("PDO 執行 query 發生錯誤：{$error_ary[2]}");
+            throw new \Exception("PDO 執行 query 發生錯誤：{$error_ary[2]}");
         }
     }
 
@@ -361,19 +306,19 @@ class Jsnpdo extends Abstract_Jsnpdo
      * @param   $table_name   資料表
      * @param   $else         其他條件
      * @param   $status_debug 除錯語句
-     * @return                返回 ArrayObject 或 SQL 字串 或 0
+     * @return                返回 ArrayObject 或 SQL 字串 或 false
      */
     public static function sel($column, $table_name, $else = null, $status_debug = null)
     {
-
         $mix = self::select_run("sel", $column, $table_name, $else, $status_debug, true);
 
-        if ($mix == "get_string") {
+        if ($mix == "get_string") 
+        {
             return self::$sql;
         }
 
         //若沒有資料回傳0
-        return ($mix->count == 0) ? "0" : $mix->data;
+        return ($mix->count == 0) ? false : $mix->data;
     }
 
     // 同 sel()
@@ -393,15 +338,14 @@ class Jsnpdo extends Abstract_Jsnpdo
      */
     public static function selone($column, $table_name, $else, $status_debug = null)
     {
-
-        $mix = self::select_run("selone", $column, $table_name, $else, $status_debug);
+        $mix = self::select_run("selone", $column, $table_name, $else, $status_debug, false);
 
         if ($mix == "get_string") {
             return self::$sql;
         }
 
         if ($mix->count > 1) {
-            throw new Exception("查詢指令錯誤，數量多於一筆");
+            throw new \Exception("查詢指令錯誤，數量多於一筆");
         }
 
         return ($mix->count == 0) ? "0" : $mix->data;
@@ -427,14 +371,16 @@ class Jsnpdo extends Abstract_Jsnpdo
 
         $where = trim($where);
 
-        if (empty($where)) {
-            throw new Exception("delete 方法務必指定 where 條件");
+        if (empty($where)) 
+        {
+            throw new \Exception("delete 方法務必指定 where 條件");
         }
 
         $sql = "delete from {$table_name} where {$where}; ";
 
         //debug str
-        if (self::get_debug($status_debug) == "str") {
+        if (self::get_debug($status_debug) == "str") 
+        {
             self::$debug_msg = self::sql_replace_condition($sql);
 
             self::sel("*", $table_name, "where {$where} ", "str");
@@ -489,7 +435,8 @@ class Jsnpdo extends Abstract_Jsnpdo
 
         $result = self::query($sql, $status_debug);
 
-        if (self::$get_string == 1) {
+        if (self::$get_string == 1)
+        {
             return $result;
         }
 
@@ -528,55 +475,6 @@ class Jsnpdo extends Abstract_Jsnpdo
         return self::$PDO->lastInsertId();
     }
 
-    /**
-     * 啟用 select 快取
-     * @param  $bool 預設不啟用
-     */
-    public static function cache($bool = 0)
-    {
-        if ($bool == 0) {
-            self::$cache_status = 0;
-        } else {
-            self::$cache_status = 1;
-        }
-    }
-
-    public static function cache_path($path)
-    {
-        return parent::cache_path($path);
-    }
-
-    //取得快取的使用狀態是設定set 還是讀取get
-    public static function cache_set_get()
-    {
-        return parent::$cache_set_get;
-    }
-
-    /**
-     * 刪除快取
-     * @param   $key 快取鍵。若不指定快取鍵，將刪除所有快取
-     * @return       bool
-     */
-    public static function cache_clean($key = null)
-    {
-        if (empty($key)) {
-            return parent::cache_clean();
-        } else {
-            return parent::cache_delete($key);
-        }
-    }
-
-    //取得快取鍵
-    public static function cache_key_get()
-    {
-        return parent::cache_key_get();
-    }
-
-    //取得快取內容
-    public static function cache_get($key)
-    {
-        return parent::cache_get($key);
-    }
 
     // HHHHHHHHH     HHHHHHHHHEEEEEEEEEEEEEEEEEEEEEELLLLLLLLLLL             PPPPPPPPPPPPPPPPP
     // H:::::::H     H:::::::HE::::::::::::::::::::EL:::::::::L             P::::::::::::::::P
@@ -600,7 +498,7 @@ class Jsnpdo extends Abstract_Jsnpdo
     {
         $showres = self::query("show index from `{$table_name}`", null);
 
-        $indexinfo = $showres->fetch(PDO::FETCH_ASSOC);
+        $indexinfo = $showres->fetch(\PDO::FETCH_ASSOC);
 
         return $indexinfo['Column_name'];
     }
@@ -611,13 +509,19 @@ class Jsnpdo extends Abstract_Jsnpdo
      */
     protected static function check_param_post_get($post_get)
     {
-        if ($post_get == "POST") {
+        if ($post_get == "POST") 
+        {
             self::$request_ary = $_POST;
-        } elseif ($post_get == "GET") {
+        } 
+        elseif ($post_get == "GET") 
+        {
             self::$request_ary = $_GET;
-        } else {
-            if (isset($post_get)) {
-                throw new Exception("請指定指定 POST 或 GET");
+        } 
+        else 
+        {
+            if (isset($post_get)) 
+            {
+                throw new \Exception("請指定指定 POST 或 GET");
             }
 
             self::$request_ary = null;
@@ -706,26 +610,32 @@ class Jsnpdo extends Abstract_Jsnpdo
     /**
      * 檢查有無where語句的替換值。
      *
-     * 例如將 array("title" => "標題") 形成為 array(":title" => "標題") 給 PDO::execute()
-     * 提供 PDO::prepare() 使用 where 條件時可以透過指定 『where title = :title』將 :title 對應到 標題
+     * 例如將 array("title" => "標題") 形成為 array(":title" => "標題") 給 \PDO::execute()
+     * 提供 \PDO::prepare() 使用 where 條件時可以透過指定 『where title = :title』將 :title 對應到 標題
      * 若指定使用 POST 或 GET 將自訂引用
      */
     protected static function condition_replace_request()
     {
-       
-        foreach (self::$select_condition as $column_name => $column_val) {
-            if (!empty($column_val)) {
-                $befcondi[":" . $column_name] = $column_val;
+        $befcondi = [];
 
+        foreach (self::$select_condition as $column_name => $column_val) 
+        {
+            if (!empty($column_val)) 
+            {
+                $befcondi[":" . $column_name] = $column_val;
             }
 
             // 若不存在POST/GET
-            elseif (!isset(self::$request_ary)) {
+            elseif (!isset(self::$request_ary)) 
+            {
                 $befcondi[":" . $column_name] = $column_val;
-            } else {
+            } 
+            else 
+            {
                 //自動添加 '' 供後續判斷
-                $befcondi[":" . $column_name] = Jsnpdo::quo(self::$request_ary[$column_name]);
-                // $befcondi[":" . $column_name] = Jsnpdo::quo(self::$request_ary[$column_name]);
+                $index            = ":" . $column_name;
+                $val              = self::$request_ary[$column_name];
+                $befcondi[$index] = self::quo($val);
             }
         }
 
@@ -809,34 +719,13 @@ class Jsnpdo extends Abstract_Jsnpdo
      */
     protected static function select_run($select_type, $column, $table_name, $else, $status_debug, $debug_quote)
     {
-
-        if (!class_exists("Jsnao")) {
-            throw new Exception("請先引用 jsnao");
-        }
+        $obj = new \stdClass;
 
         //除錯時的安全限制處理
         $else = self::debug_auto_limit($else, $status_debug);
 
         $sql = self::select_string($column, $table_name, $else);
 
-        // 啟用快取
-        if (self::$cache_status == 1) {
-            parent::cache_init();
-
-            //cache 辨識 key, 並記錄起來
-            $cache_sql_key = hash("sha1", $sql);
-            parent::$cache_key = $cache_sql_key;
-            $cache_obj = parent::cache_get($cache_sql_key);
-
-            // 若曾製作快取
-            if (!empty($cache_obj)) {
-
-                //設定數量
-                self::$select_num = $cache_obj->count;
-
-                return $cache_obj;
-            }
-        }
 
         // 該query資源會提供給 debug str 或 正常運行多筆資料、單筆資料
         $result = self::query($sql, $status_debug, $debug_quote);
@@ -854,7 +743,7 @@ class Jsnpdo extends Abstract_Jsnpdo
             // 轉換
             $msg = self::sql_replace_condition($sql);
 
-            $data = new jsnao($result->fetchAll(PDO::FETCH_ASSOC));
+            $data = new \Jsnlib\Ao($result->fetchAll(\PDO::FETCH_ASSOC));
 
             self::warning('stop', $msg, $data);
         }
@@ -871,14 +760,14 @@ class Jsnpdo extends Abstract_Jsnpdo
 
             $data = $result->fetchAll(self::$fetch_type);
 
-            $obj->data = new jsnao($data);
+            $obj->data = new \Jsnlib\Ao($data);
         }
 
         //單筆列表
         else{
             $data = $result->fetch(self::$fetch_type);
 
-            $obj->data = new jsnao($data);
+            $obj->data = new \Jsnlib\Ao($data);
         }
 
         // debug chk
@@ -886,19 +775,11 @@ class Jsnpdo extends Abstract_Jsnpdo
             if (self::$select_num > 0) {
                 // 再一次query
                 $result = self::query($sql, $status_debug);
-                $data = new jsnao($result->fetchAll(PDO::FETCH_ASSOC));
+                $data = new \Jsnlib\Ao($result->fetchAll(\PDO::FETCH_ASSOC));
             }
             self::warning("continue", $sql, $data);
         }
 
-        //啟用快取
-        if (self::$cache_status == 1 and empty($cache_obj)) {
-            $cache_r = parent::cache_set($cache_sql_key, $obj, self::$cache_life);
-
-            if (!$cache_r) {
-                throw new Exception("快取製作發生錯誤");
-            }
-        }
 
         return $obj;
     }

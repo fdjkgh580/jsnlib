@@ -19,6 +19,7 @@
             "Filelink",
             "Group",
             "Hash",
+            "Pdo",
             "Popcount",
             "Rand",
             "Seq",
