@@ -138,7 +138,3 @@ catch(Exception $e)
     echo $e->getFile() . "<br>";
     echo $e->getLine() . "行<br>";
 }
-
-
-
-?>

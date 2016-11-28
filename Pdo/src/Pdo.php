@@ -103,7 +103,6 @@ class Pdo extends Abstpdo
         // debug 純文字
         if (self::get_debug($status_debug) == 1) 
         {
-
             $msg = self::sql_replace_condition($sql, $debug_quote);
 
             self::warning('stop', $msg);
@@ -120,6 +119,7 @@ class Pdo extends Abstpdo
             if (!$result) 
             {
                 $error_ary = $result->errorinfo();
+                
                 throw new \Exception("PDO 執行 query 發生錯誤：{$error_ary[2]}");
             }
 
