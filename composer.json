@@ -24,7 +24,8 @@
             "Popcount",
             "Rand",
             "Seq",
-            "Taiwan"
+            "Taiwan",
+            "Upload"
         ],
         "files": ["Function.php"]
     }
