@@ -1,14 +1,12 @@
 <?
 header('Content-Type: text/html; charset=UTF-8'); 
 
-include_once("jsnupload.php");
+require_once ("Upload.php");
 
-$U 		= new Jsnupload;		
+$U 		= new Jsnlib\Upload;		
 		
-		
-if (isset($_POST['go'])) {
-	
-	
+if (isset($_POST['go'])) 
+{
 	$inputname					=	"upl"; //設定input file 的名稱, upl代表了 name="upl[]"
 	$U->filename 				=	$inputname; //input name屬性的陣列名稱				
 	$U->arraykey 				= 	0; //input name陣列鍵值(起始值)						
@@ -23,26 +21,27 @@ if (isset($_POST['go'])) {
 	
 	
 	//$val為原始上傳的文件名稱，若要將檔名使用原始檔名，建議配合uniqid() 
-	foreach ($_FILES[$inputname]["name"] as $val) {
+	foreach ($_FILES[$inputname]["name"] as $val) 
+	{
 
 		if ($U->isnextkey($val)) continue; //不限數量 (遇到未指定的就換下一個<input>)
 		$add_arraykey	= $U->arraykey;
 		
 		//開始上傳
 		//小
-		$newname_s 		= date("YmdHis").$U->arraykey."_s.".$U->scandN(1);	
+		$newname_s 		= uniqid(date("YmdHis_")). "_" . $U->arraykey."_s.".$U->scandN(1);	
 		$U->resize_width			=	150;
 		$U->resize_height			=	150;
 		$U->fileupload_multi($newname_s, $add_arraykey, 1, "retain");
 		
 		//中
-		$newname_m 		= date("YmdHis").$U->arraykey."_m.".$U->scandN(1);	
+		$newname_m 		= uniqid(date("YmdHis_")). "_" . $U->arraykey."_m.".$U->scandN(1);	
 		$U->resize_width			=	400;
 		$U->resize_height			=	400;
 		$U->fileupload_multi($newname_m, $add_arraykey, 1, "retain");
 
 		//大
-		$newname_b 		= date("YmdHis").$U->arraykey."_b.".$U->scandN(1);	
+		$newname_b 		= uniqid(date("YmdHis_")). "_" . $U->arraykey."_b.".$U->scandN(1);	
 		$U->resize_width			=	1280;
 		$U->resize_height			=	1280;
 		$U->fileupload_multi($newname_b, $add_arraykey, 1, "clean");
@@ -52,17 +51,16 @@ if (isset($_POST['go'])) {
 		中: <a href="<?=$U->site . $newname_m?>"><?=$U->site . $newname_m?></a><br>
 		大: <a href="<?=$U->site . $newname_b?>"><?=$U->site . $newname_b?></a><br>
 		<?
-		}
+	}
 		
 	die;
-	}
+}
 	
 
 
 ?>
 <form method="post" enctype="multipart/form-data" action="">
 	<div>訣竅：無論單比或多筆都使用name="upl[]"</div>
-	<div><input name="upl[]" type="file"></div>
-	<div><input name="upl[]" type="file"></div>
+	<div><input name="upl[]" type="file" multiple></div>
     <div><input name="go" type="submit" value="送出"></div>
 </form>

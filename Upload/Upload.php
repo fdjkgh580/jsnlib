@@ -1,5 +1,8 @@
 <?
-class Jsnupload {
+namespace Jsnlib;
+
+class Upload 
+{
 	
 	public 	$filename;					//input的name屬性陣列名稱				ex. input="upl[]"	的 upl		
 	public	$arraykey;					//input的name屬性鍵值				ex.	input="upl[0]"	的 0
@@ -143,11 +146,13 @@ class Jsnupload {
 	//讓字串結尾保持 「 / 」 
 	function auto_endslash($string)
 	{
+
 		$endstr		=	substr($string, -1);
 		$token		=	"/";
 		if ($endstr == $token) {
 			unset($token);
-			}
+			return $string;
+		}
 		return $string.$token;
 	}
 		
@@ -311,10 +316,8 @@ class Jsnupload {
 		{
 			$success	=	$this->end_upload();						//清空暫存
 			$this->arraykey = $add_arraykey +1;							//接著準備上傳下一個<input>吧
+			return $success;
 		}
-		
-			
-		return $success;
 	}		
 }		
 
