@@ -119,28 +119,40 @@ class Upload
 		return 1;
 	}	
 
+	function create_folder($site)
+	{
+		$ary        =	explode("/",$site);
+		$filter_ary = array_filter($ary);
+		$prev_folder = null;
+		if (is_array($filter_ary)) foreach ($filter_ary as $key => $folder)
+		{
+			$create_folder = empty($prev_folder) ? $folder : $prev_folder . "/{$folder}";
+			$prev_folder = $create_folder;
+			echo $create_folder;
+			echo "<br>";
+
+			$real    = realpath($create_folder);
+			$isexist = file_exists($real);
+			if ($isexist) continue;
+			
+			$mkresult = mkdir($create_folder, $this->pathaccess);
+			if ($mkresult === false) throw new \Exception("嘗試建立路徑失敗：" . $folder);
+		}
+	}
+
+
 	//準備好路徑
 	function setuplpath()
 	{
-		$site       =	$this->site;
-		$access     =	$this->pathaccess;
 
-		//分解並依序往下檢查、建立路徑(資料夾)
-		$ary        =	explode("/",$site);
-		$filter_ary = array_filter($ary);
-		if (is_array($filter_ary)) foreach ($filter_ary as $key => $folder)
+		//指定路徑若不存在，就分解並依序往下檢查、建立路徑(資料夾)
+		if ( !file_exists($this->site))
 		{
-			$real    = realpath($folder);
-			$isexist = file_exists($real);
-			if ($isexist) continue;
-		
-			$mkresult = mkdir($folder, $access);
-			if ($mkresult === false) throw new \Exception("嘗試建立路徑失敗：" . $folder);
-		}
-
+			$this->create_folder($this->site);
+		}		
 
 		//取得真實路徑
-		$realpath = realpath($site);
+		$realpath = realpath($this->site);
 		
 		//
 		if (!is_writable($realpath)) 
@@ -149,7 +161,7 @@ class Upload
 			$perms = decoct ($perms); //10進未轉8進位
 			$perms = substr($perms, -4); //取得後方4位的權值
 			
-			throw new \Exception("不可寫入：{$site}，權值是：{$perms}");
+			throw new \Exception("不可寫入：{$this->site}，權值是：{$perms}");
 		}
 		
 		return 1;
@@ -237,11 +249,9 @@ class Upload
 	{
 		//指定位置
 		$newname	=	$this->newname;
-		$site		=	$this->site;
 		//檢查並自動幫site結尾補上/ 
-		$site		=	$this->auto_endslash($site);
-		$site		=	$site.$newname;
-		return $site;
+		$this->site	=	$this->auto_endslash($this->site);
+		return $this->site . $newname;
 	}
 	
 	//開始上傳 

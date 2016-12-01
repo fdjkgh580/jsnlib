@@ -15,7 +15,7 @@ try
 		$U->could_secondname		=	"jpg"; //允許副檔名	
 		$U->pathaccess				=	"0777"; //路徑權限
 		$U->size					=	5; //MB					
-		$U->site					=	"images/"; //上傳路徑		
+		$U->site					=	"images"; //上傳路徑，結尾口有可無 /	
 		$U->resizeImageScriptPath	=	"plugin/ImageResize.php"; //套件ImageResize 路徑	(可相對於class jsnupload 的位置)
 		$U->resize_width			=	400; //若要不同的size就在下方each的時候再填寫即可
 		$U->resize_height			=	400;
