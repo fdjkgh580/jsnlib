@@ -128,8 +128,6 @@ class Upload
 		{
 			$create_folder = empty($prev_folder) ? $folder : $prev_folder . "/{$folder}";
 			$prev_folder = $create_folder;
-			echo $create_folder;
-			echo "<br>";
 
 			$real    = realpath($create_folder);
 			$isexist = file_exists($real);
@@ -298,6 +296,55 @@ class Upload
 		$result	=	ImageResize($site,$site,$neww,$newh,$retype,$req);	//成功返回存放路徑 失敗返回false
 		if (!$result)	return 0;
 		return 1;
+	}
+
+	/**
+	 * 依照尺寸自動上傳，並自動命名
+	 * @param   $param['prefix']                選)前贅字，若不指定將自動編排 4 字
+	 * @param   $param['url']                   選)可回傳網址
+	 * @param   $param['sizelist']['size']      選)放在後贅字，作為辨識尺寸
+	 * @param   $param['sizelist']['width']     選)寬度
+	 * @param   $param['sizelist']['height']    選)高度
+	 */
+	function fileupload($param)
+	{
+		$rand      = new \Jsnlib\Rand;
+		$sizelist  = $param['sizelist'];
+		$prefix    = isset($param['prefix']) ? $param['prefix'] : $rand->get(4, "2");
+		$returnbox = [];
+
+		//$val為原始上傳的文件名稱，若要將檔名使用原始檔名，建議配合uniqid() 
+		foreach ($_FILES[$this->filename]["name"] as $fkey => $val) 
+		{
+			if ($this->isnextkey($val)) continue; //不限數量 (遇到未指定的就換下一個<input>)
+
+			$N = $prefix . "_" . $rand->get(4, "2") . "_" . time();
+
+			foreach ($sizelist as $key => $info)
+			{
+				$endupload = (!isset($sizelist[$key + 1])) ? "clean" : "retain";
+
+				$newname = $N . "_" . $info['size'] . "." . $this->scandN(1);
+				$this->resize_width  = $info['width'];
+				$this->resize_height = $info['height'];
+				$this->fileupload_multi($newname, $this->arraykey, 1, $endupload);
+
+				// 回傳格式
+				$back             = [];
+				$back['path']     = $this->site . $newname;
+				$back['filename'] = $this->site . $newname;
+				
+				// 若指定網址
+				if (isset($param['url']))
+				{
+					$back['url'] = trim($param['url'], "\ /") . "/" . $this->site . $newname;
+				}
+
+				$returnbox[$fkey][$info['size']] = $back;
+			}
+		}
+
+		return $returnbox;
 	}
 	
 		
