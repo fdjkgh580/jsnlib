@@ -122,11 +122,23 @@ class Upload
 	//準備好路徑
 	function setuplpath()
 	{
-		$site	=	$this->site;
+		$site       =	$this->site;
+		$access     =	$this->pathaccess;
+
 		//分解並依序往下檢查、建立路徑(資料夾)
-		$ary	=	explode("/",$site);
-		$access	=	$this->pathaccess;
+		$ary        =	explode("/",$site);
+		$filter_ary = array_filter($ary);
+		if (is_array($filter_ary)) foreach ($filter_ary as $key => $folder)
+		{
+			$real    = realpath($folder);
+			$isexist = file_exists($real);
+			if ($isexist) continue;
 		
+			$mkresult = mkdir($folder, $access);
+			if ($mkresult === false) throw new \Exception("嘗試建立路徑失敗：" . $folder);
+		}
+
+
 		//取得真實路徑
 		$realpath = realpath($site);
 		
@@ -137,7 +149,7 @@ class Upload
 			$perms = decoct ($perms); //10進未轉8進位
 			$perms = substr($perms, -4); //取得後方4位的權值
 			
-			die("不可寫入：{$realpath}，權值是：{$perms}");		
+			throw new \Exception("不可寫入：{$site}，權值是：{$perms}");
 		}
 		
 		return 1;
@@ -181,10 +193,10 @@ class Upload
 			switch ($error) 
 			{
 				case 4:
-					die("請選擇檔案");				
+					throw new \Exception("請選擇檔案");				
 					break; 
 			}
-			die("上傳錯誤，代碼:{$error}");
+			throw new \Exception("上傳錯誤，代碼:{$error}");
 		}
 		
 		//2.檢查附檔名黑、白名單
@@ -195,23 +207,23 @@ class Upload
 		
 		
 		
-		if (!empty($bla) and !empty($whi)) 	die("黑、白名單請擇一設置。");
+		if (!empty($bla) and !empty($whi)) 	throw new \Exception("黑、白名單請擇一設置。");
 
 		elseif (!empty($bla)) 
 		{
-			if ($blacklist	==	0) die("不允許的檔案型態 : {$original_file}");
+			if ($blacklist	==	0) throw new \Exception("不允許的檔案型態 : {$original_file}");
 		}
 			
 		elseif (!empty($whi)) 
 		{ 
-			if ($whitelist	==	0) die("不允許的檔案型態 : {$original_file}");
+			if ($whitelist	==	0) throw new \Exception("不允許的檔案型態 : {$original_file}");
 		}
 		
 		//3.檔案大小
 		$filesize	=	$_FILES[$filename]['size'][$arykey] / 1000 / 1000;	//上傳大小
 		$setsize	=	$this->size;									//指定大小
 		$size		=	$this->chk_size();
-		if ($size == 0) die("您的『{$original_file}』檔案大小： {$filesize} MB；超過指定大小 : {$setsize} MB");
+		if ($size == 0) throw new \Exception("您的『{$original_file}』檔案大小： {$filesize} MB；超過指定大小 : {$setsize} MB");
 		
 		//4.準備好存放路徑
 		$this->setuplpath();
@@ -242,8 +254,10 @@ class Upload
 		
 		//上傳完整路徑
 		$site		=	$this->mix_path_file();
-		copy($filetemp,$site) or die("上傳錯誤: copy({$filetemp}, {$site})也有可能是上傳的路徑沒有權限寫入。");		//使用copy事後須刪除
-		return 1;
+		
+		if (copy($filetemp,$site)) return 1;
+
+		throw new \Exception("上傳錯誤: copy({$filetemp}, {$site})也有可能是上傳的路徑沒有權限寫入。");		//使用copy事後須刪除
 	}
 		
 	//結束上傳	
@@ -263,7 +277,7 @@ class Upload
 		include_once($ImageResizeScriptPath);
 		
 		$chktype	=	$this->chk_type("image");
-		if ($chktype == 0) die("檔案非圖片格式類型，不可調整大小");
+		if ($chktype == 0) throw new \Exception("檔案非圖片格式類型，不可調整大小");
 		
 		$site	=	$this->mix_path_file();
 		$neww	=	$this->resize_width;
