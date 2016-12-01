@@ -331,8 +331,8 @@ class Upload
 
 				// 回傳格式
 				$back             = [];
+				$back['filename'] = $newname;
 				$back['path']     = $this->site . $newname;
-				$back['filename'] = $this->site . $newname;
 				
 				// 若指定網址
 				if (isset($param['url']))
