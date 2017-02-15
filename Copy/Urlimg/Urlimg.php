@@ -20,22 +20,22 @@ class Urlimg
 	{
 		try
 		{
-			if (empty($this->resizeary) and empty($this->orgary)) throw new Exception("請先指定前置步驟，copy()是最後一個步驟");
+			if (empty($this->resizeary) and empty($this->orgary)) throw new \Exception("請先指定前置步驟，copy()是最後一個步驟");
 		
 			//若有使用多筆縮放
 			if (is_array($this->resizeary))  foreach ($this->resizeary as $DataInfo)
 			{	
-				$elsename			=	$DataInfo[3] . "/" . $DataInfo[4];
+				$elsename			=	$DataInfo[3] . DIRECTORY_SEPARATOR . $DataInfo[4];
 				$res				=	@ImageResize($this->url, $elsename, $DataInfo[0], $DataInfo[1], 1, $DataInfo[2]);
 				if (!empty($res))
 					$this->result[]	=	$elsename;	
-				else 					throw new Exception("抓取圖片發生錯誤(縮放)");	
+				else 					throw new \Exception("抓取圖片發生錯誤(縮放)");	
 			}
 			
 			//若有使用多筆原圖複製, 不透過ImageResize()會較快些
 			if (is_array($this->orgary)) foreach ($this->orgary as $DataInfo)
 			{
-				$allname			=	$DataInfo[0] . "/" . $DataInfo[1];
+				$allname			=	$DataInfo[0] . DIRECTORY_SEPARATOR . $DataInfo[1];
 
 				$imgcontent			=	file_get_contents($this->url);
 				$Handle				=	fopen($allname, "w+");
@@ -43,7 +43,7 @@ class Urlimg
 				fclose($Handle);
 				if (!empty($fr))
 					$this->result[]	=	$allname;
-				else 					throw new Exception("抓取圖片發生錯誤(原始)");	
+				else 					throw new \Exception("抓取圖片發生錯誤(原始)");	
 			}
 			
 			return $this;
@@ -60,15 +60,15 @@ class Urlimg
 	{
 		try
 		{
-			if (empty($this->url))		throw new Exception("請先用url()指定抓取圖片的網址");
+			if (empty($this->url))		throw new \Exception("請先用url()指定抓取圖片的網址");
 			
 			//過濾並檢查路徑可寫入嗎？
-			$save_dir				=	rtrim($save_dir, "/ ");
+			$save_dir				=	rtrim($save_dir, "/\ ");
 			$result					=	$this->is_write($save_dir);
 			if (!$result)
 			{
 				$perms				=	$this->get_perms($save_dir);
-				throw new Exception("儲存的路徑{$save_dir}不可寫入，目前的權限值：{$perms}，請調整為可寫入的值，例如 0777");	
+				throw new \Exception("儲存的路徑{$save_dir}不可寫入，目前的權限值：{$perms}，請調整為可寫入的值，例如 0777");	
 			}
 
 			//若沒有自訂檔名
@@ -115,7 +115,9 @@ class Urlimg
 	{
 		try
 		{
-			if (!function_exists("ImageResize"))	throw new Exception("請先引用function ImageResize");
+			if (!function_exists("ImageResize")) {
+				require_once("plugin/ImageResize.php");
+			}
 			
 			$newname							=	$this->check($save_dir, $newname);
 			$this->resizeary[]					=	array($width, $height, $quantity, $save_dir, $newname);

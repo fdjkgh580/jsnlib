@@ -25,7 +25,8 @@
             "Rand",
             "Seq",
             "Taiwan",
-            "Upload"
+            "Upload",
+            "UploadImageBase64"
         ],
         "files": ["Function.php"]
     }
