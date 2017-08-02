@@ -26,10 +26,24 @@ class UploadImageBase64 extends \Jsnlib\Copy\Urlimg
      * @param   $param['base64']     圖片的 Base64 編碼
      * @param   $param['filename']   檔案名稱
      * @param   $param['path']       儲存的路徑
+     * @param   $param['mode']       檔案權限，如 '0777'
      */
     public function setting(array $param)
     {
-        $this->setting = new \Jsnlib\Ao($param);;
+        $this->setting = new \Jsnlib\Ao($param);
+
+        if (empty($this->setting->base64)) 
+            throw new \Exception("請指定參數 base64");
+
+        if (empty($this->setting->filename)) 
+            throw new \Exception("請指定參數 filename");
+        
+        if (empty($this->setting->path)) 
+            throw new \Exception("請指定參數 path");
+
+        if (empty($this->setting->mode)) 
+            throw new \Exception("請指定參數 mode");
+        
         $this->source  = base64_decode($this->setting->base64);
         
         // 組合路徑與檔名
@@ -54,6 +68,8 @@ class UploadImageBase64 extends \Jsnlib\Copy\Urlimg
             
         // 存放
         $result = file_put_contents($this->file, $this->source);
+        chmod($this->file, $this->setting->mode);
+
 
         $path          = $this->setting->path;
         $filename      = trim($this->setting->filename, "\ /");

@@ -16,7 +16,7 @@ class Urlimg
 	}
 	
 	//最後就開始複製吧, 返回的是$this 供串接下去，若要減是成果請print_r public result()
-	public function copy()
+	public function copy($mode = 0775)
 	{
 		try
 		{
@@ -30,8 +30,11 @@ class Urlimg
 				if (!empty($res))
 					$this->result[]	=	$elsename;	
 				else 					throw new \Exception("抓取圖片發生錯誤(縮放)");	
+
+				chmod($elsename, $mode);
 			}
-			
+
+
 			//若有使用多筆原圖複製, 不透過ImageResize()會較快些
 			if (is_array($this->orgary)) foreach ($this->orgary as $DataInfo)
 			{
@@ -41,6 +44,8 @@ class Urlimg
 				$Handle				=	fopen($allname, "w+");
 				$fr					=	fwrite($Handle, $imgcontent);  //傳回byte數
 				fclose($Handle);
+				chmod($allname, $mode);
+
 				if (!empty($fr))
 					$this->result[]	=	$allname;
 				else 					throw new \Exception("抓取圖片發生錯誤(原始)");	
